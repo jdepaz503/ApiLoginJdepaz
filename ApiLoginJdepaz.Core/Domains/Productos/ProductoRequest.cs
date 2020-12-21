@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ApiLoginJdepaz.Core.Domains.Productos
 {
-    public class RegistrarProductoRequest
+    public class ProductoRequest
     {
         public string SKU { get; set; }
         public string nombre { get; set; }

@@ -9,7 +9,9 @@ namespace ApiLoginJdepaz.Core.UseCase.Interfaces
 {
     public interface IProductoUseCase
     {
-        Task<ProductoResponse> AddProduct(RegistrarProductoRequest request);
+        Task<ProductoResponse> AddProduct(ProductoRequest request);
         Task<List<ProductoResponse>> GetProducts();
+
+        Task<ProductoResponse> UpdateProducts(ProductoRequest request);
     }
 }

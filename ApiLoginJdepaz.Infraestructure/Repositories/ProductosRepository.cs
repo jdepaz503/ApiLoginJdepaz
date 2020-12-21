@@ -24,7 +24,7 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
             map = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<ProductoResponse> AddProduct(RegistrarProductoRequest request)
+        public async Task<ProductoResponse> AddProduct(ProductoRequest request)
         {
             ProductoResponse response = new ProductoResponse();
             var paramSku            = new SqlParameter("@SKU",          request.SKU);
@@ -59,6 +59,33 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
                 IList<TblProductos> usr = await db.Productos.FromSqlRaw("SP_ObtenerProductos").ToListAsync();
                 if (usr != null && usr.Count != 0)
                     response = map.Map<List<ProductoResponse>>(usr.ToList());
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex.Message} {ex.InnerException?.Message}");
+                throw;
+            }
+        }
+
+        public async Task<ProductoResponse> UpdateProducts(ProductoRequest request)
+        {
+            ProductoResponse response = new ProductoResponse();
+            var paramSku = new SqlParameter("@SKU", request.SKU);
+            var paramNombre = new SqlParameter("@nombre", request.nombre);
+            var paramCantidad = new SqlParameter("@cantidad", request.cantidad);
+            var paramPrecio = new SqlParameter("@precio", request.precio);
+            var paramDescripcion = new SqlParameter("@descripcion", request.descripcion);
+            var paramimagen = new SqlParameter("@imagen", request.imagen);
+            try
+            {
+                IList<TblProductos> usr = await db.Productos.FromSqlRaw(
+                    "SP_ActulizarProductos @SKU,@nombre,@cantidad,@precio,@descripcion,@imagen",
+                    paramSku, paramNombre, paramCantidad, paramPrecio, paramDescripcion, paramimagen).ToListAsync();
+                if (usr != null && usr.Count != 0)
+                {
+                    response = map.Map<ProductoResponse>(usr.FirstOrDefault());
+                }
                 return response;
             }
             catch (Exception ex)

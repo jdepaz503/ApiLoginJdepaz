@@ -7,7 +7,8 @@ namespace ApiLoginJdepaz.Core.Interfaces
 {
     public interface IProductosRepository
     {
-        Task<ProductoResponse> AddProduct(RegistrarProductoRequest request);
+        Task<ProductoResponse> AddProduct(ProductoRequest request);
         Task<List<ProductoResponse>> GetProducts();
+        Task<ProductoResponse> UpdateProducts(ProductoRequest request);
     }
 }

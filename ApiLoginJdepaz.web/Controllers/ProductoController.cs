@@ -22,7 +22,7 @@ namespace ApiLoginJdepaz.web.Controllers
         [HttpPost]
         [ApiVersion("1.0")]
         [Route("~/api/v{version:ApiVersion}/AgregarProducto")]
-        public async Task<ProductoResponse> AddProduct([FromBody] RegistrarProductoRequest request)
+        public async Task<ProductoResponse> AddProduct([FromBody] ProductoRequest request)
         {
             return await useCase.AddProduct(request);
         }
@@ -35,5 +35,12 @@ namespace ApiLoginJdepaz.web.Controllers
             return await useCase.GetProducts();
         }
 
+        [HttpPost]
+        [ApiVersion("1.0")]
+        [Route("~/api/v{version:ApiVersion}/ActualizarProductos")]
+        public async Task<ProductoResponse> UpdateProducts(ProductoRequest request)
+        {
+            return await useCase.UpdateProducts(request);
+        }
     }
 }
