@@ -1,7 +1,6 @@
 ﻿using ApiLoginJdepaz.Core.Domains.Login;
 using ApiLoginJdepaz.Core.Models.Generic;
 using ApiLoginJdepaz.Core.UseCase.Interfaces;
-using AutoMapper.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -14,18 +13,21 @@ using System.Text;
 using System.Threading.Tasks;
 //
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ApiLoginJdepaz.web.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class LoginController : ControllerBase
     {
         private readonly IUsuarioUseCase useCase;
-        //private readonly IConfiguration _config;
-        public LoginController(IUsuarioUseCase usuarioUseCase)
+        private readonly IConfiguration config;
+        public LoginController(IUsuarioUseCase usuarioUseCase, IConfiguration configuration)
         {
             useCase = usuarioUseCase ?? throw new ArgumentNullException(nameof(usuarioUseCase));
+            config = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         [HttpPost]
@@ -36,11 +38,12 @@ namespace ApiLoginJdepaz.web.Controllers
             GenericResponse<LoginResponse> response;
             try
             {
+                string patron = config["AppSettings:PatronConfig"];
                 LoginWithPatron requestPatron = new LoginWithPatron()
                 {
                     pass_user = request.pass_user,
                     username = request.username,
-                    Patron = "V4Kc10ne$"//conf["AppSettings:PatronConfig"]
+                    Patron = patron
                 };
                 
                 var item = await useCase.LoginUsuario(requestPatron);
@@ -68,19 +71,19 @@ namespace ApiLoginJdepaz.web.Controllers
                     else
                     {
                         var tokenHandler = new JwtSecurityTokenHandler();
-                        var key = Encoding.ASCII.GetBytes("123456-ABC-WXYZ-654321-V4Kc10ne$");//conf["AppSettings:Auth_SignInKey"]);_Configuration.GetValue<string>("JwtToken:Auth_SignInKey")
+                        var key = Encoding.ASCII.GetBytes("d307a600-a844-1008-c7be-aa7f98c0a71d");// "123456 -ABC-WXYZ-654321-V4Kc10ne$");//conf["AppSettings:Auth_SignInKey"]);_Configuration.GetValue<string>("JwtToken:Auth_SignInKey")
                         var tokenDescriptor = new SecurityTokenDescriptor
                         {
                             Subject = new ClaimsIdentity(new Claim[]
                             {
                             new Claim(ClaimTypes.Name, $"{item.nombre_user}"),
-                                //new Claim(ClaimTypes.Role, usr.IdRol.ToString()),
-                                //new Claim(ClaimTypes.Gender, usr.Genero == "M" ? "Masculino" : "Femenino")
+                                new Claim(ClaimTypes.Role, "1"),
+                                new Claim(ClaimTypes.Gender, "Masculino")
                             }),
                             Audience = request.username,
                             IssuedAt = DateTime.UtcNow,
                             Issuer = "http://localhost:5000",
-                            Expires = DateTime.UtcNow.AddMinutes(5),
+                            Expires = DateTime.UtcNow.AddMinutes(300),
                             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                         };
                         tokenDescriptor.Subject.AddClaim(new Claim(ClaimTypes.Sid, item.email_user));

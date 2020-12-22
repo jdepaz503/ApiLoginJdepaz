@@ -6,15 +6,19 @@ using ApiLoginJdepaz.Infraestructure.Models;
 using ApiLoginJdepaz.Infraestructure.Models.DataContext;
 using ApiLoginJdepaz.Infraestructure.Repositories;
 using ApiLoginJdepaz.web.Auth;
+using ApiLoginJdepaz.web.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
 
 namespace ApiLoginJdepaz.web
@@ -68,28 +72,29 @@ namespace ApiLoginJdepaz.web
                     Version = "v1",
                     Contact = new OpenApiContact() { Name = "Johnny De Paz", Email = "jdepaz2012@gmail.com" }
                 });
+                c.SchemaFilter<EnumSchemaFilter>();
                 c.AddSecurityRequirement(securityRequirement);
                 c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, securityScheme);
             });
 
             AuthValidations Validations = new AuthValidations();
-            
-            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["AppSettings:SecretKey"]));
+
+            string signInKey = "d307a600-a844-1008-c7be-aa7f98c0a71d";// Configuration["AppSettings:SecretKey"];//123456-ABC-WXYZ-654321-V4Kc10ne$
+            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(signInKey));
             //d30df44c-a3ab-41d0-af6f-7370e2e6db86
             var validationParameters = new TokenValidationParameters
             {
                 ValidateAudience = true,
                 ValidateIssuer = true,
-                //ValidIssuer = ServerAddress,
                 ValidateIssuerSigningKey = false,
                 AudienceValidator = Validations.AudienceValidation,
                 //IssuerSigningKeyValidator = Validations.SignInKeyValidation,
-                //IssuerValidator = Validations.IssuerValidation,
+                IssuerValidator = Validations.IssuerValidation,
                 IssuerSigningKey = key,
-
-                RequireSignedTokens = true,
-                RoleClaimTypeRetriever = Validations.RoleClaimTypeRetreiverAssign,
-                RoleClaimType = "string"
+                ValidIssuer = "http://localhost:5000",
+                RequireSignedTokens = true//,
+                //RoleClaimTypeRetriever = Validations.RoleClaimTypeRetreiverAssign,
+                //RoleClaimType = "string"
             };
             services.AddAuthentication(x =>
             {
@@ -104,13 +109,16 @@ namespace ApiLoginJdepaz.web
                 opts.SaveToken = true;
                 opts.Validate();
             });
-            services.AddAuthorization();
+            services.AddAuthorization(config =>
+            {
+                config.AddPolicy(JwtBearerDefaults.AuthenticationScheme, p => p.RequireClaim(ClaimTypes.Sid));
+            });
 
             services.AddAndConfigDbContext<DataContext>(Configuration.GetConnectionString("DefaultConnection"));
             services.AddAndConfigMapper();
 
-
-            
+            //services.use
+            services.AddMvc(r => r.EnableEndpointRouting = false);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -132,17 +140,18 @@ namespace ApiLoginJdepaz.web
             }
 
             app.UseRouting();
-
+            app.UseHttpsRedirection();
             app.UseAuthorization();
             app.UseAuthentication();
             app.UseCors(x => x
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
-            app.UseEndpoints(endpoints =>
+            /*app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-            });
+            });*/
+            app.UseMvc();
         }
     }
 }

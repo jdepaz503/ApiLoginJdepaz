@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using ApiLoginJdepaz.Core.Interfaces;
 using ApiLoginJdepaz.Infraestructure.Models.Entities;
 using Microsoft.Data.SqlClient;
+using ApiLoginJdepaz.Core.Domains.Request;
 
 namespace ApiLoginJdepaz.Infraestructure.Repositories
 {
@@ -51,12 +52,53 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
             }
         }
 
-        public async Task<List<ProductoResponse>> GetProducts()
+        public async Task<List<ProductoResponse>> GetProducts(DataListRequest request)
         {
             List<ProductoResponse> response = new List<ProductoResponse>();
             try
             {
-                IList<TblProductos> usr = await db.Productos.FromSqlRaw("SP_ObtenerProductos").ToListAsync();
+                //IList<TblProductos> usr = await db.Productos.FromSqlRaw("SP_ObtenerProductos").ToListAsync();
+                IQueryable<TblProductos> query = db.Productos;
+                if (request.Filtros != null)
+                {
+                    foreach (OpcionBusqueda opcionBusqueda in request.Filtros)
+                    {
+                        if (opcionBusqueda.Clave == "SKU")
+                            query = query.Where(f => f.SKU == opcionBusqueda.Valor);
+                        else if (opcionBusqueda.Clave == "Nombre")
+                        {
+                            switch (opcionBusqueda.PatronOperador)
+                            {
+                                case PatronBusqueda.Equals:
+                                    query = query.Where(f => f.nombre == opcionBusqueda.Valor);
+                                    break;
+                                case PatronBusqueda.StartsWith:
+                                    query = query.Where(f => f.nombre.StartsWith(opcionBusqueda.Valor));
+                                    break;
+                                case PatronBusqueda.EndsWith:
+                                    query = query.Where(f => f.nombre.EndsWith(opcionBusqueda.Valor));
+                                    break;
+                                case PatronBusqueda.Contains:
+                                    query = query.Where(f => f.nombre.Contains(opcionBusqueda.Valor));
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        else if (opcionBusqueda.Clave == "Precio")
+                        {
+                            if (opcionBusqueda.Operador == "<=")
+                                query = query.Where(f => f.precio <= Convert.ToDecimal(opcionBusqueda.Valor));
+                            else if (opcionBusqueda.Operador == "<")
+                                query = query.Where(f => f.precio < Convert.ToDecimal(opcionBusqueda.Valor));
+                            if (opcionBusqueda.Operador == ">=")
+                                query = query.Where(f => f.precio >= Convert.ToDecimal(opcionBusqueda.Valor));
+                            else if (opcionBusqueda.Operador == ">")
+                                query = query.Where(f => f.precio > Convert.ToDecimal(opcionBusqueda.Valor));
+                        }
+                    }
+                }
+                IList<TblProductos> usr = await query.Skip((request.Pagina.Value - 1) * request.ElementosPorPagina.Value).Take(request.ElementosPorPagina.Value).ToListAsync();
                 if (usr != null && usr.Count != 0)
                     response = map.Map<List<ProductoResponse>>(usr.ToList());
                 return response;
@@ -85,6 +127,27 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
                 if (usr != null && usr.Count != 0)
                 {
                     response = map.Map<ProductoResponse>(usr.FirstOrDefault());
+                }
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex.Message} {ex.InnerException?.Message}");
+                throw;
+            }
+        }
+
+        public async Task<EliminarUsuarioResponse> DeleteProduct(string sku)
+        {
+            EliminarUsuarioResponse response = new EliminarUsuarioResponse();
+            var paramSku = new SqlParameter("@SKU", sku);
+            try
+            {
+                IList<TblProductos> usr = await db.Productos.FromSqlRaw(
+                    "SP_EliminarProductos @SKU",paramSku).ToListAsync();
+                if (usr != null && usr.Count != 0)
+                {
+                    response.result = usr.ToString();
                 }
                 return response;
             }

@@ -25,12 +25,20 @@ namespace ApiLoginJdepaz.web.Auth
             var castedToken = securityToken as JwtSecurityToken;
             return validationParameters.IssuerSigningKey == securityKey && validationParameters.IssuerSigningKey == castedToken.SigningKey;
         }
-
-        public string RoleClaimTypeRetreiverAssign(SecurityToken securityToken, string roleType)
+        public string IssuerValidation(string issuer, SecurityToken securityToken, TokenValidationParameters validationParameters)
         {
             var castedToken = securityToken as JwtSecurityToken;
-            var roleClaim = castedToken.Claims.SingleOrDefault(s => s.Type == "role");
-            return roleClaim.Value;
+            if (issuer == $"http://localhost:5000" && issuer == validationParameters.ValidIssuer &&
+                issuer == castedToken.Issuer)
+                return issuer;
+            return null;
         }
+
+        //public string RoleClaimTypeRetreiverAssign(SecurityToken securityToken, string roleType)
+        //{
+        //    var castedToken = securityToken as JwtSecurityToken;
+        //    //var roleClaim = castedToken.Claims.SingleOrDefault(s => s.Type == "role");
+        //    return "Admin";// roleClaim.Value;
+        //}
     }
 }

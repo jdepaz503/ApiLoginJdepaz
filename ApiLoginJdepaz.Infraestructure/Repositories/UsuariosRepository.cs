@@ -10,6 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace ApiLoginJdepaz.Infraestructure.Repositories
 {
@@ -17,10 +20,12 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
     {
         private readonly DataContext db;
         private readonly IMapper map;
-        public UsuariosRepository(DataContext _db, IMapper mapper)
+        private readonly IConfiguration config;
+        public UsuariosRepository(DataContext _db, IMapper mapper, IConfiguration configuration)
         {
             db = _db ?? throw new ArgumentNullException(nameof(_db));
             map = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            config = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public async Task<UsuarioResponse> LoginUser(LoginWithPatron request)
@@ -64,6 +69,7 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
 
         public async Task<UsuarioResponse> AddUser(RegistroUsuarioRequest request)
         {
+            string patron = config["AppSettings:PatronConfig"];
             UsuarioResponse response = new UsuarioResponse();
             var paramNombreUser = new SqlParameter("@nombre_user", request.nombre_user);
             var paramUserName = new SqlParameter("@username", request.username);
@@ -71,7 +77,7 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
             var paramPassUser = new SqlParameter("@pass_user", request.pass_user);
             var paramTelUser = new SqlParameter("@telefono_user", request.telefono_user);
             var paramFnacUser= new SqlParameter("@fnac_user", request.fnac_user);
-            var paramPatron = new SqlParameter("@Patron", "V4Kc10ne$");
+            var paramPatron = new SqlParameter("@Patron", patron);
             try
             {
                 IList<TblUsuarios> usr = await db.Usuarios.FromSqlRaw(
@@ -143,5 +149,6 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
             }
 
         }
+
     }
 }
