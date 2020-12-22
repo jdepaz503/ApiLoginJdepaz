@@ -15,6 +15,10 @@ using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace ApiLoginJdepaz.Infraestructure.Repositories
 {
@@ -150,21 +154,101 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
             }
 
         }
-        public void sendMail(string correo)
-        {
-            var email = new MimeMessage();
-            email.From.Add(MailboxAddress.Parse(config["EnvioCorreo:CorreoFrom"]));
-            email.To.Add(MailboxAddress.Parse(correo));
-            email.Subject = "Test Email Subject";
-            email.Body = new TextPart(TextFormat.Html) { Text = "<h1>Example HTML Message Body</h1>" };
 
-            // send email
-            var smtp = new SmtpClient();
-            smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-            smtp.Authenticate(config["EnvioCorreo:CorreoFrom"], config["EnvioCorreo:PassCorreoFrom"]);
-            smtp.Send(email);
-            smtp.Disconnect(true);
-            smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+        
+
+        public async Task<EmailPasswordResetResponse> passwordReset(ResetPasswordRequest request)
+        {
+            EmailPasswordResetResponse response = new EmailPasswordResetResponse();
+            var paramUserName = new SqlParameter("@username", request.user);
+            var paramCorreo= new SqlParameter("@email_user", request.correo);
+            try
+            {
+                IList<TblUsuarios> usr = await db.Usuarios.FromSqlRaw(
+                    "SP_PasswordReset @username,@email_user ", paramUserName, paramCorreo).ToListAsync();
+                if (usr != null && usr.Count != 0)
+                {
+                    //response = map.Map<EmailPasswordResetResponse>(usr.FirstOrDefault());
+                    var envio = sendMail(request.user, usr.FirstOrDefault().email_user);
+                    response.email_user = envio;
+                }
+                
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex.Message} {ex.InnerException?.Message}");
+                throw;
+            }
+
         }
+        
+        public string sendMail(string user,string correo)
+        {
+            try
+            {
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse(config["EnvioCorreo:CorreoFrom"]));
+                email.To.Add(MailboxAddress.Parse(correo));
+
+                //generar JWT
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(config["JWT:key"]);
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new Claim[]
+                    {
+                            new Claim(ClaimTypes.Name, $"correo")
+                    }),
+                    Audience = correo,
+                    IssuedAt = DateTime.UtcNow,
+                    Issuer = config["JWT:Issuer"],
+                    Expires = DateTime.UtcNow.AddMinutes(15),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                };
+                tokenDescriptor.Subject.AddClaim(new Claim(ClaimTypes.Sid, correo));
+                if (!string.IsNullOrEmpty(correo))
+                    tokenDescriptor.Subject.AddClaim(new Claim(ClaimTypes.Email, correo));
+
+                var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+                string Token = tokenHandler.WriteToken(securityToken);
+
+
+                //email.Subject = "ResetPassword ApiLoginJdepaz";
+                email.Subject = "Prueba2";
+                email.Body = new TextPart(TextFormat.Html)
+                {
+                    Text = "" +
+                    "<h4>ApiLoginJdepaz</h4>" +
+                    "<p>" + user + " Gracias por utilizar el servicio de Johnny De Paz, podrá cambiar su contraseña mediante el siguiente formulario, recuerde que solo tienes 15 minutos.</p>" +
+                    "<form action='" + config["JWT:Issuer"] + "api/v1.0/cambiarContraseña/' method='post' enctype='text/plain'>" +
+                    "<inpu type='text' name='token' style='visibility: hidden;' value='"+Token+"'" +
+                    "Nueva clave:<br>" +
+                    "<input type='text' name='pass1' required ><br>" +
+                    "<input type='submit' value='CAMBIAR CLAVE'></form>"
+                };
+
+                // send email
+                var smtp = new SmtpClient();
+                smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+                smtp.Authenticate(config["EnvioCorreo:CorreoFrom"], config["EnvioCorreo:PassCorreoFrom"]);
+                smtp.Send(email);
+                smtp.Disconnect(true);
+                smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+                return "EXITO";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex.Message} {ex.InnerException?.Message}");
+                return "Error" + ex.Message;
+            }
+        }
+
+        public string changePassword(string token, string newPassword)
+        {
+
+            return "ok";
+        }
+
     }
 }

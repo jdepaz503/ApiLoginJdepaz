@@ -11,7 +11,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-//
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authorization;
 
@@ -71,7 +70,7 @@ namespace ApiLoginJdepaz.web.Controllers
                     else
                     {
                         var tokenHandler = new JwtSecurityTokenHandler();
-                        var key = Encoding.ASCII.GetBytes("d307a600-a844-1008-c7be-aa7f98c0a71d");// "123456 -ABC-WXYZ-654321-V4Kc10ne$");//conf["AppSettings:Auth_SignInKey"]);_Configuration.GetValue<string>("JwtToken:Auth_SignInKey")
+                        var key = Encoding.ASCII.GetBytes(config["JWT:key"]);
                         var tokenDescriptor = new SecurityTokenDescriptor
                         {
                             Subject = new ClaimsIdentity(new Claim[]
@@ -82,7 +81,7 @@ namespace ApiLoginJdepaz.web.Controllers
                             }),
                             Audience = request.username,
                             IssuedAt = DateTime.UtcNow,
-                            Issuer = "http://localhost:5000",
+                            Issuer = config["JWT:Issuer"],
                             Expires = DateTime.UtcNow.AddMinutes(300),
                             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                         };

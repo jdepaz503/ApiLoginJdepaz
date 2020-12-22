@@ -14,6 +14,7 @@ namespace ApiLoginJdepaz.Infraestructure.Mapper
         {
             CreateMap<TblUsuarios, UsuarioResponse>();
             CreateMap<TblProductos, ProductoResponse>();
+            CreateMap<TblProductos, EmailPasswordResetResponse>();
         }
     }
 }

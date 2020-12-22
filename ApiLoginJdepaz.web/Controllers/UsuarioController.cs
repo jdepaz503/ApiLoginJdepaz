@@ -1,6 +1,8 @@
 ﻿using ApiLoginJdepaz.Core.Domains.Usuarios;
 using ApiLoginJdepaz.Core.Models.Generic;
 using ApiLoginJdepaz.Core.UseCase.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SendGrid;
@@ -25,6 +27,7 @@ namespace ApiLoginJdepaz.web.Controllers
         [HttpPost]
         [ApiVersion("1.0")]
         [Route("~/api/v{version:ApiVersion}/Agregar")]
+        [Authorize(JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> AddUser([FromBody] RegistroUsuarioRequest request)
         {
             GenericResponse<RegistroUsuarioResponse> response;
@@ -99,9 +102,10 @@ namespace ApiLoginJdepaz.web.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPut]
         [ApiVersion("1.0")]
         [Route("~/api/v{version:ApiVersion}/Modificar")]
+        [Authorize(JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> UpdateUser([FromBody] ModificarUsuarioRequest request)
         {
             GenericResponse<ModificarUsuarioRequest> response;
@@ -150,9 +154,10 @@ namespace ApiLoginJdepaz.web.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpDelete]
         [ApiVersion("1.0")]
         [Route("~/api/v{version:ApiVersion}/Desactivar")]
+        [Authorize(JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DefuseUser([FromBody] DesactivarUsuarioRequest request)
         {
             GenericResponse<DesactivarUsuarioRequest> response;
@@ -211,13 +216,23 @@ namespace ApiLoginJdepaz.web.Controllers
             return item;
         }
 
+        
         [HttpPost]
         [ApiVersion("1.0")]
-        [Route("~/api/v{version:ApiVersion}/EnviarCorreo")]
-        public void sendMail(string correo)
+        [Route("~/api/v{version:ApiVersion}/PasswordReset")]
+        public Task<EmailPasswordResetResponse> passwordReset(ResetPasswordRequest request)
         {
-            useCase.sendMail(correo);
-            return;
+            var response = useCase.passwordReset(request);
+            return response;
+        }
+
+        [HttpPut]
+        [ApiVersion("1.0")]
+        [Route("~/api/v{version:ApiVersion}/cambiarContraseña/{token},{newPassword}")]
+        public string changePassword(string token, string newPassword)
+        {
+            var response = useCase.changePassword(token, newPassword);
+            return response;
         }
     }
 }
