@@ -1,8 +1,6 @@
 ﻿using ApiLoginJdepaz.Core.Domains.Login;
 using ApiLoginJdepaz.Core.Domains.Usuarios;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ApiLoginJdepaz.Core.Interfaces
@@ -14,5 +12,6 @@ namespace ApiLoginJdepaz.Core.Interfaces
         Task<UsuarioResponse> AddUser(RegistroUsuarioRequest request);
         Task<UsuarioResponse> UpdateUser(ModificarUsuarioRequest request);
         Task<UsuarioResponse> DefuseUser(DesactivarUsuarioRequest request);
+        void sendMail(string correo);
     }
 }

@@ -2,6 +2,7 @@
 using ApiLoginJdepaz.Core.Domains.Usuarios;
 using ApiLoginJdepaz.Core.Interfaces;
 using ApiLoginJdepaz.Core.UseCase.Interfaces;
+using SendGrid;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,5 +23,6 @@ namespace ApiLoginJdepaz.Core.UseCase
         public async Task<UsuarioResponse> AddUser(RegistroUsuarioRequest request) => await repository.AddUser(request);
         public async Task<UsuarioResponse> UpdateUser(ModificarUsuarioRequest request) => await repository.UpdateUser(request);
         public async Task<UsuarioResponse> DefuseUser(DesactivarUsuarioRequest request) => await repository.DefuseUser(request);
+        public void sendMail(string correo) => repository.sendMail(correo);
     }
 }

@@ -3,6 +3,7 @@ using ApiLoginJdepaz.Core.Models.Generic;
 using ApiLoginJdepaz.Core.UseCase.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SendGrid;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -208,6 +209,15 @@ namespace ApiLoginJdepaz.web.Controllers
         {
             var item = await useCase.GetUsers();
             return item;
+        }
+
+        [HttpPost]
+        [ApiVersion("1.0")]
+        [Route("~/api/v{version:ApiVersion}/EnviarCorreo")]
+        public void sendMail(string correo)
+        {
+            useCase.sendMail(correo);
+            return;
         }
     }
 }

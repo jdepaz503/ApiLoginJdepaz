@@ -11,8 +11,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using SendGrid;
-using SendGrid.Helpers.Mail;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
+using MimeKit.Text;
 
 namespace ApiLoginJdepaz.Infraestructure.Repositories
 {
@@ -69,7 +71,6 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
 
         public async Task<UsuarioResponse> AddUser(RegistroUsuarioRequest request)
         {
-            string patron = config["AppSettings:PatronConfig"];
             UsuarioResponse response = new UsuarioResponse();
             var paramNombreUser = new SqlParameter("@nombre_user", request.nombre_user);
             var paramUserName = new SqlParameter("@username", request.username);
@@ -77,7 +78,7 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
             var paramPassUser = new SqlParameter("@pass_user", request.pass_user);
             var paramTelUser = new SqlParameter("@telefono_user", request.telefono_user);
             var paramFnacUser= new SqlParameter("@fnac_user", request.fnac_user);
-            var paramPatron = new SqlParameter("@Patron", patron);
+            var paramPatron = new SqlParameter("@Patron", config["AppSettings:PatronConfig"]);
             try
             {
                 IList<TblUsuarios> usr = await db.Usuarios.FromSqlRaw(
@@ -105,7 +106,7 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
             var paramNombreUser = new SqlParameter("@nombre_user", request.nombre_user);
             var paramTelUser = new SqlParameter("@telefono_user", request.telefono_user);
             var paramFnacUser = new SqlParameter("@fnac_user", request.fnac_user);
-            var paramPatron = new SqlParameter("@Patron", "V4Kc10ne$");
+            var paramPatron = new SqlParameter("@Patron", config["AppSettings:PatronConfig"]);
             try
             {
                 IList<TblUsuarios> usr = await db.Usuarios.FromSqlRaw(
@@ -130,7 +131,7 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
         {
             UsuarioResponse response = new UsuarioResponse();
             var paramUserName = new SqlParameter("@username", request.username);
-            var paramPatron = new SqlParameter("@Patron", "V4Kc10ne$");
+            var paramPatron = new SqlParameter("@Patron", config["AppSettings:PatronConfig"]);
             try
             {
                 IList<TblUsuarios> usr = await db.Usuarios.FromSqlRaw(
@@ -149,6 +150,21 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
             }
 
         }
+        public void sendMail(string correo)
+        {
+            var email = new MimeMessage();
+            email.From.Add(MailboxAddress.Parse(config["EnvioCorreo:CorreoFrom"]));
+            email.To.Add(MailboxAddress.Parse(correo));
+            email.Subject = "Test Email Subject";
+            email.Body = new TextPart(TextFormat.Html) { Text = "<h1>Example HTML Message Body</h1>" };
 
+            // send email
+            var smtp = new SmtpClient();
+            smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+            smtp.Authenticate(config["EnvioCorreo:CorreoFrom"], config["EnvioCorreo:PassCorreoFrom"]);
+            smtp.Send(email);
+            smtp.Disconnect(true);
+            smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+        }
     }
 }
