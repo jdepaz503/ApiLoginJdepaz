@@ -24,6 +24,6 @@ namespace ApiLoginJdepaz.Core.UseCase
         public async Task<UsuarioResponse> DefuseUser(DesactivarUsuarioRequest request) => await repository.DefuseUser(request);
         //public string sendMail(string user, string correo) => repository.sendMail(user,correo);
         public async Task<EmailPasswordResetResponse> passwordReset(ResetPasswordRequest request) => await repository.passwordReset(request);
-        public string changePassword(string token, string newPassword)=>repository.changePassword(token,newPassword);
+        public async Task<string> changePassword(string token, string newPassword) => await repository.changePassword(token,newPassword);
     }
 }

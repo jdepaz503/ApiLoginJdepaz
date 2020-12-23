@@ -16,6 +16,6 @@ namespace ApiLoginJdepaz.Core.UseCase.Interfaces
         Task<UsuarioResponse> DefuseUser(DesactivarUsuarioRequest request);
         //string sendMail(string user, string correo);
         Task<EmailPasswordResetResponse> passwordReset(ResetPasswordRequest request);
-        string changePassword(string token, string newPassword);
+        Task<string> changePassword(string token, string newPassword);
     }
 }

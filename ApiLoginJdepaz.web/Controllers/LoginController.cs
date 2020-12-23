@@ -75,9 +75,8 @@ namespace ApiLoginJdepaz.web.Controllers
                         {
                             Subject = new ClaimsIdentity(new Claim[]
                             {
-                            new Claim(ClaimTypes.Name, $"{item.nombre_user}"),
-                                new Claim(ClaimTypes.Role, "1"),
-                                new Claim(ClaimTypes.Gender, "Masculino")
+                                new Claim(ClaimTypes.Name, $"{item.nombre_user}"),
+                                new Claim(ClaimTypes.Email, $"{item.email_user}")
                             }),
                             Audience = request.username,
                             IssuedAt = DateTime.UtcNow,
@@ -88,9 +87,6 @@ namespace ApiLoginJdepaz.web.Controllers
                         tokenDescriptor.Subject.AddClaim(new Claim(ClaimTypes.Sid, item.email_user));
                         if (!string.IsNullOrEmpty(item.email_user))
                             tokenDescriptor.Subject.AddClaim(new Claim(ClaimTypes.Email, item.email_user));
-                        if (!string.IsNullOrEmpty(item.telefono_user))
-                            tokenDescriptor.Subject.AddClaim(new Claim(ClaimTypes.HomePhone, item.telefono_user.ToString()));
-
                         var securityToken = tokenHandler.CreateToken(tokenDescriptor);
                         string Token = tokenHandler.WriteToken(securityToken);
 

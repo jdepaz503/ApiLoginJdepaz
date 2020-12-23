@@ -198,7 +198,8 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                     {
-                            new Claim(ClaimTypes.Name, $"correo")
+                            new Claim(ClaimTypes.Email, correo),
+                            new Claim(ClaimTypes.UserData, user)
                     }),
                     Audience = correo,
                     IssuedAt = DateTime.UtcNow,
@@ -215,17 +216,13 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
 
 
                 //email.Subject = "ResetPassword ApiLoginJdepaz";
-                email.Subject = "Prueba2";
+                email.Subject = "ResetPassword ApiLoginJdepaz";
                 email.Body = new TextPart(TextFormat.Html)
                 {
-                    Text = "" +
+                    Text = 
                     "<h4>ApiLoginJdepaz</h4>" +
-                    "<p>" + user + " Gracias por utilizar el servicio de Johnny De Paz, podrá cambiar su contraseña mediante el siguiente formulario, recuerde que solo tienes 15 minutos.</p>" +
-                    "<form action='" + config["JWT:Issuer"] + "api/v1.0/cambiarContraseña/' method='post' enctype='text/plain'>" +
-                    "<inpu type='text' name='token' style='visibility: hidden;' value='"+Token+"'" +
-                    "Nueva clave:<br>" +
-                    "<input type='text' name='pass1' required ><br>" +
-                    "<input type='submit' value='CAMBIAR CLAVE'></form>"
+                    "<p>" + user + " Gracias por utilizar el servicio de Johnny De Paz, podrá cambiar su contraseña mediante el siguiente " +
+                    "<a href='https://elaniin.com/' target='_blank'>enlance</a>, recuerde que solo tienes 15 minutos.</p>"
                 };
 
                 // send email
@@ -235,7 +232,7 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
                 smtp.Send(email);
                 smtp.Disconnect(true);
                 smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-                return "EXITO";
+                return Token;
             }
             catch (Exception ex)
             {
@@ -244,10 +241,34 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
             }
         }
 
-        public string changePassword(string token, string newPassword)
+        public async Task<string> changePassword(string token, string newPassword)
         {
+            string result = "";
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var securityToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+            var emailInToken = securityToken.Claims.First(claim => claim.Type == ClaimTypes.Email).Value;
+            var UserInToken = securityToken.Claims.First(claim => claim.Type == ClaimTypes.Email).Value;
+            var paramEmail_user = new SqlParameter("@username", UserInToken);
+            var paramUser_pass = new SqlParameter("@pass_user", newPassword);
+            var paramPatron = new SqlParameter("@Patron", config["AppSettings:PatronConfig"]);
+            try
+            {
+                IList<TblUsuarios> usr = await db.Usuarios.FromSqlRaw("SP_cambiarClaveUsuario @username,@pass_user,@Patron", paramEmail_user, paramUser_pass, paramPatron).ToListAsync();
+                if (usr != null && usr.Count != 0)
+                {
+                    result ="Se cambió la clave para el usuario "+ UserInToken + "con correo " +usr.FirstOrDefault().email_user;
+                    return result;
+                }
 
-            return "ok";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex.Message} {ex.InnerException?.Message}");
+                result = ex.Message;
+                throw;
+            }
+
+            return result;
         }
 
     }

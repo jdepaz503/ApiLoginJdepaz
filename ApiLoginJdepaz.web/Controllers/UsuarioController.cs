@@ -228,7 +228,8 @@ namespace ApiLoginJdepaz.web.Controllers
         [HttpPut]
         [ApiVersion("1.0")]
         [Route("~/api/v{version:ApiVersion}/cambiarContraseña/{token},{newPassword}")]
-        public string changePassword(string token, string newPassword)
+        [Authorize(JwtBearerDefaults.AuthenticationScheme)]
+        public Task<string> changePassword(string token, string newPassword)
         {
             var response = useCase.changePassword(token, newPassword);
             return response;
