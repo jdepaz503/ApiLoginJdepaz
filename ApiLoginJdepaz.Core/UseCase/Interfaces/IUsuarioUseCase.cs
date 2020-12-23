@@ -1,6 +1,5 @@
 ﻿using ApiLoginJdepaz.Core.Domains.Login;
 using ApiLoginJdepaz.Core.Domains.Usuarios;
-using SendGrid;
 using System;
 using System.Collections.Generic;
 using System.Text;

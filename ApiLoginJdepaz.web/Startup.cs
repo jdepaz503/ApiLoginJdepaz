@@ -7,6 +7,7 @@ using ApiLoginJdepaz.Infraestructure.Models.DataContext;
 using ApiLoginJdepaz.Infraestructure.Repositories;
 using ApiLoginJdepaz.web.Auth;
 using ApiLoginJdepaz.web.Helpers;
+using ElmahCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -38,6 +39,7 @@ namespace ApiLoginJdepaz.web
             services.AddCors();
             services.AddControllers();
             services.AddApiVersioning();
+            services.AddElmah();
             OpenApiSecurityScheme securityScheme = new OpenApiSecurityScheme()
             {
                 Description = "Ingrese token de seguridad en campo pendiente",
@@ -124,21 +126,21 @@ namespace ApiLoginJdepaz.web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment() || env.IsEnvironment("Localhost"))
-            {
+            //if (env.IsDevelopment() || env.IsEnvironment("Localhost"))
+            //{
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Johnny's API");
                 });
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                app.UseHsts();
-            }
-
+            //}
+            //else
+            //{
+            //    app.UseExceptionHandler("/Error");
+            //    app.UseHsts();
+            //}
+            app.UseElmah();
             app.UseRouting();
             app.UseHttpsRedirection();
             app.UseAuthorization();
