@@ -45,7 +45,6 @@ namespace ApiLoginJdepaz.web
                 Description = "Ingrese token de seguridad en campo pendiente",
                 Name = "Authorization",
                 In = ParameterLocation.Header,
-                //BearerFormat = "JWT",
                 Type = SecuritySchemeType.ApiKey,
                 Scheme = JwtBearerDefaults.AuthenticationScheme,
                 Reference = new OpenApiReference()
@@ -58,10 +57,9 @@ namespace ApiLoginJdepaz.web
             OpenApiSecurityRequirement securityRequirement = new OpenApiSecurityRequirement();
             securityRequirement.Add(securityScheme, new List<string>());
 
+            //Inyección de dependencias
             services.AddTransient<IUsuariosRepository, UsuariosRepository>();
             services.AddTransient<IUsuarioUseCase, UsuarioUseCase>();
-            //services.AddTransient<IUsuariosRepository, UsuariosRepository>();
-
             services.AddTransient<IProductosRepository, ProductosRepository>();
             services.AddTransient<IProductoUseCase, ProductoUseCase>();
 
@@ -126,20 +124,13 @@ namespace ApiLoginJdepaz.web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //if (env.IsDevelopment() || env.IsEnvironment("Localhost"))
-            //{
+            
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Johnny's API");
                 });
-            //}
-            //else
-            //{
-            //    app.UseExceptionHandler("/Error");
-            //    app.UseHsts();
-            //}
             app.UseElmah();
             app.UseRouting();
             app.UseHttpsRedirection();
@@ -149,10 +140,6 @@ namespace ApiLoginJdepaz.web
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
-            /*app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });*/
             app.UseMvc();
         }
     }

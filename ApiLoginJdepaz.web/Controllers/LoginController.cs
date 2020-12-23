@@ -16,9 +16,15 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace ApiLoginJdepaz.web.Controllers
 {
+    /*
+        Controller Login: Es el encargado de validar si el usuario existe en la base de datos mediante el username y passuser. 
+        Endpoint: 
+        1-Login: Pide un loginRequest como parametros, el cual contiene username y pass_user, endpoint consulta a useCase.LoginUsuario
+    */
+
     [Route("api/[controller]")]
     [ApiController]
-    [AllowAnonymous]
+    [AllowAnonymous] 
     public class LoginController : ControllerBase
     {
         private readonly IUsuarioUseCase useCase;
@@ -32,8 +38,9 @@ namespace ApiLoginJdepaz.web.Controllers
         [HttpPost]
         [ApiVersion("1.0")]
         [Route("~/api/v{version:ApiVersion}/Auth")]
-        public async Task<IActionResult> Index([FromBody] LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
+            
             GenericResponse<LoginResponse> response;
             try
             {
@@ -45,17 +52,21 @@ namespace ApiLoginJdepaz.web.Controllers
                     Patron = patron
                 };
                 
+                //Consulta al useCase LoginUsuario, encargado de devolvernos el registro de usuario si llegace a existir en la base. 
                 var item = await useCase.LoginUsuario(requestPatron);
 
 
+                //Validar que el username no sea null
                 if (item != null && !string.IsNullOrEmpty(item.username))
                 {
+                    //validar que usuario no esté inactivo
                     if (item.Estado == 0)
                     {
                         LoginResponse loginResponseUnauthorized = new LoginResponse()
                         {
                             Jwt = "0",
                             ExpirationDate = DateTime.Today.AddDays(-1)
+                            //Se devuelve el LoginResponse sin token
                         };
                         response = new GenericResponse<LoginResponse>()
                         {
@@ -66,9 +77,11 @@ namespace ApiLoginJdepaz.web.Controllers
                                 Description = "USUARIO INHABILITADO"
                             }
                         };
+                        //Se manda el Gererin response indicando que usuario está inhabilitado
                     }
                     else
                     {
+                        //Si sse especifica 
                         var tokenHandler = new JwtSecurityTokenHandler();
                         var key = Encoding.ASCII.GetBytes(config["JWT:key"]);
                         var tokenDescriptor = new SecurityTokenDescriptor
@@ -81,7 +94,7 @@ namespace ApiLoginJdepaz.web.Controllers
                             Audience = request.username,
                             IssuedAt = DateTime.UtcNow,
                             Issuer = config["JWT:Issuer"],
-                            Expires = DateTime.UtcNow.AddMinutes(300),
+                            Expires = DateTime.UtcNow.AddMinutes(300),//Caducidad de 5 horas
                             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                         };
                         tokenDescriptor.Subject.AddClaim(new Claim(ClaimTypes.Sid, item.email_user));

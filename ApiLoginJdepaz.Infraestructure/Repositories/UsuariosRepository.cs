@@ -60,7 +60,6 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
             List<UsuarioResponse> response = new List<UsuarioResponse>();
             try
             {
-                //CON ESTE ME HA FUncionado man 
                 IList<TblUsuarios> usr = await db.Usuarios.FromSqlRaw("SP_ObtenerUsuarios").ToListAsync();
                 if (usr != null && usr.Count != 0)
                     response = map.Map<List<UsuarioResponse>>(usr.ToList());
