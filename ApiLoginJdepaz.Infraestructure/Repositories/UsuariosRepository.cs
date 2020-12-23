@@ -167,7 +167,7 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
                     "SP_PasswordReset @username,@email_user ", paramUserName, paramCorreo).ToListAsync();
                 if (usr != null && usr.Count != 0)
                 {
-                    //response = map.Map<EmailPasswordResetResponse>(usr.FirstOrDefault());
+                    
                     var envio = sendMail(request.user, usr.FirstOrDefault().email_user);
                     response.email_user = envio;
                 }
@@ -214,14 +214,14 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
                 string Token = tokenHandler.WriteToken(securityToken);
 
 
-                //email.Subject = "ResetPassword ApiLoginJdepaz";
+
                 email.Subject = "ResetPassword ApiLoginJdepaz";
                 email.Body = new TextPart(TextFormat.Html)
                 {
                     Text = 
                     "<h4>ApiLoginJdepaz</h4>" +
                     "<p>" + user + " Gracias por utilizar el servicio de Johnny De Paz, podrá cambiar su contraseña mediante el siguiente " +
-                    "<a href='https://elaniin.com/' target='_blank'>enlance</a>, recuerde que solo tienes 15 minutos.</p>"
+                    "<a href='"+ config["AppSettings:LinkFrontforEmail"] + "' target='_blank'>enlance</a>, recuerde que solo tienes 15 minutos.</p>"
                 };
 
                 // send email
