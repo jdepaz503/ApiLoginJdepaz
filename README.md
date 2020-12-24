@@ -249,11 +249,11 @@ http://jdepaz2012-001-site1.ftempurl.com/api/v1.0/cambiarContraseña/
 
 3-	Contains
 
-#### **Valor**: 
+**Valor**: Valor string que será el condicional a filtra por ejemplo "Disco Duro"
 
 **Pagina**: valor INT para indicar que pagina queremos ver
 
-**elementosPorPagina**: Valor 
+**elementosPorPagina**: Valor INT que indica cuantos elementos por cada página se quieren ver.
 
 #### Ejemplo:
 ```
