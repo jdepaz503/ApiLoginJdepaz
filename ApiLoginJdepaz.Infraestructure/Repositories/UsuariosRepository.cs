@@ -240,17 +240,17 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
             }
         }
 
-        public async Task<string> changePassword(string token, string newPassword)
+        public async Task<string> changePassword(CambiarClaveRequest request)
         {
             string result = "";
             var tokenHandler = new JwtSecurityTokenHandler();
-            var securityToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+            var securityToken = tokenHandler.ReadToken(request.token) as JwtSecurityToken;
             var patron = config["AppSettings:PatronConfig"];
             var emailInToken = securityToken.Claims.Where(c => c.Type == "email").Select(x => x.Value).FirstOrDefault();
             var UserInToken = securityToken.Claims.Where(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata").Select(x => x.Value).FirstOrDefault();
             var paramUser_name = new SqlParameter("@username", UserInToken);
             var paramEmail_user = new SqlParameter("@email_user", emailInToken);
-            var ParamPass_user = new SqlParameter("@pass_user", newPassword);
+            var ParamPass_user = new SqlParameter("@pass_user", request.newPassword);
             var paramPatron = new SqlParameter("@Patron", patron);
             try
             {

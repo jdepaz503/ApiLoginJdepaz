@@ -245,11 +245,11 @@ namespace ApiLoginJdepaz.web.Controllers
 
         [HttpPut]
         [ApiVersion("1.0")]
-        [Route("~/api/v{version:ApiVersion}/cambiarContraseña/{token},{newPassword}")]
+        [Route("~/api/v{version:ApiVersion}/cambiarContraseña/")]
         [Authorize(JwtBearerDefaults.AuthenticationScheme)]
-        public Task<string> changePassword(string token, string newPassword)
+        public Task<string> changePassword(CambiarClaveRequest request)
         {
-            var response = useCase.changePassword(token, newPassword);
+            var response = useCase.changePassword(request);
             return response;
         }
     }
