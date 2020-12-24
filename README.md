@@ -118,16 +118,16 @@ http://jdepaz2012-001-site1.ftempurl.com/api/v1.0/Auth
 #### Este método está protegido con authorize por lo cual es necesario utilizar antes el login para poder obtener un token y consumir esta funcionalidad. 
 
 ### 6.2.1.1. Copiar el token de la petición anterior del [paso 6.1.1](#login)
-![login](https://www.campusmvp.es/recursos/image.axd?picture=/Logos-Banners/Entity-Framework-Core.png)
+![login](https://i.ibb.co/6gXwzMW/2.png)
 
 ### 6.2.1.2. Preparar petición con Authorization
-![login](https://www.campusmvp.es/recursos/image.axd?picture=/Logos-Banners/Entity-Framework-Core.png)
+![login](https://i.ibb.co/5BPhFnQ/3.png)
 #### En caso no aparezca la pestaña Authorization, se puede agregar en la pestaña headers de la siguiente manera: 
 ```
 Key: Authorization
 Value: Bearer <token_obtenido_de_login>
 ```
-![login](https://www.campusmvp.es/recursos/image.axd?picture=/Logos-Banners/Entity-Framework-Core.png)
+![login](https://i.ibb.co/rMTpd0y/4.png)
 
 ## 6.2.1.3. Preparar petición 
 #### Ejemplo:
@@ -145,14 +145,14 @@ http://jdepaz2012-001-site1.ftempurl.com/api/v1.0/AgregarUsuario
 }
 
 ```
-![login](https://www.campusmvp.es/recursos/image.axd?picture=/Logos-Banners/Entity-Framework-Core.png)
+![login](https://i.ibb.co/3kGzjVZ/5.png)
 
 ### 6.2.2. Obtener Usuarios <div id='obt' />
 ### 6.2.2.1. Hacer petición
 #### Ejemplo:
 ```http://jdepaz2012-001-site1.ftempurl.com/api/v1.0/ObtenerUsuarios```
 
-![login](https://www.campusmvp.es/recursos/image.axd?picture=/Logos-Banners/Entity-Framework-Core.png)
+![login](https://i.ibb.co/xLgdpmM/6.png)
 
 ### 6.2.3. Desactivar Usuarios <div id='desac' />
 #### 1. Preparar Authorize con Token de login
@@ -168,7 +168,7 @@ http://jdepaz2012-001-site1.ftempurl.com/api/v1.0/DesactivarUsuario
 
 ```
 
-![login](https://www.campusmvp.es/recursos/image.axd?picture=/Logos-Banners/Entity-Framework-Core.png)
+![login](https://i.ibb.co/tZzYPy0/7.png)
 
 #### 3. Ejecutar el [paso 6.2.2](#obt)
 
@@ -188,10 +188,10 @@ http://jdepaz2012-001-site1.ftempurl.com/api/v1.0/ModificarUsuario
 
 ```
 
-![login](https://www.campusmvp.es/recursos/image.axd?picture=/Logos-Banners/Entity-Framework-Core.png)
+![login](https://i.ibb.co/M8p2djf/9.png)
 
 #### 3. Ejecutar el [paso 6.2.2](#obt)
-![login](https://www.campusmvp.es/recursos/image.axd?picture=/Logos-Banners/Entity-Framework-Core.png)
+![login](https://i.ibb.co/zfXMmJR/10.png)
 
 ### 6.2.5. Password Reset 🔐 <div id='pwd' />
 #### 1. Preparar petición
@@ -206,11 +206,11 @@ http://jdepaz2012-001-site1.ftempurl.com/api/v1.0/PasswordReset
 
 ```
 
-![login](https://www.campusmvp.es/recursos/image.axd?picture=/Logos-Banners/Entity-Framework-Core.png)
+![login](https://i.ibb.co/s609NtH/11.png)
 
 Lo que se hablaba anteriormente, actualmente el enlace del correo en este caso es la página oficial de Elaniin. Pero debe ser modificado por un enlace de un front que permita hacer la siguiente petición del paso 5.7 y recibir el token del paso 5.6 donde va inmerso el correo y user del usuario, además de enviar el nuevo password que le fue solicitado al usuario, para poder modificar la propiedad LinkFrontforEmail ubicado en el proyecto ApiLoginJdepaz.web  en el archivo appsettings.json en la línea 17.
 
-![login](https://www.campusmvp.es/recursos/image.axd?picture=/Logos-Banners/Entity-Framework-Core.png)
+![login](https://i.ibb.co/2ghwJM7/12.png)
 
 ### 6.2.5. Cambiar contraseña 🔏 <div id='pwdupd' />
 #### 1. Preparar Authorize y copiar el token del paso [6.1.1](#login)
@@ -227,11 +227,11 @@ http://jdepaz2012-001-site1.ftempurl.com/api/v1.0/cambiarContraseña/
 
 ```
 
-![login](https://www.campusmvp.es/recursos/image.axd?picture=/Logos-Banners/Entity-Framework-Core.png)
+![login](https://i.ibb.co/5R4SvJP/13.png)
 
-![login](https://www.campusmvp.es/recursos/image.axd?picture=/Logos-Banners/Entity-Framework-Core.png)
+![login](https://i.ibb.co/TTjFXGv/14.png)
 
-![login](https://www.campusmvp.es/recursos/image.axd?picture=/Logos-Banners/Entity-Framework-Core.png)
+![login](https://i.ibb.co/X7jnXXS/15.png)
 
 ## 6.3. Productos 📦 <div id='prod' />
 #### Todos los métodos de este endpoint requieren de Authorize con token login
@@ -270,4 +270,4 @@ http://jdepaz2012-001-site1.ftempurl.com/api/v1.0/cambiarContraseña/
 
 ```
 
-![login](https://www.campusmvp.es/recursos/image.axd?picture=/Logos-Banners/Entity-Framework-Core.png)
+![login](https://i.ibb.co/T2BsSLm/16.png)
