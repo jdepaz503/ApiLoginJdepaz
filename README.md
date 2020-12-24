@@ -9,7 +9,7 @@ ApiLoginJdepaz 👨‍💻
 3. [Elementos técnicos utilizados](#elem)
 4. [Buenas prácticas utilizadas](#pract)
 5. [Instalación-Despliegue local](#inst)
-6. [Prueba de Web Api con Postman (con detalles e imagenes)](#prueba)
+6. [Prueba de Web Api con Postman (con detalles e imágenes)](#prueba)
     1. [Login](#login)
     2. [Usuarios](#user)
         1. [Agregar usuarios](#add)
@@ -90,14 +90,14 @@ MailKit 📫
 1. Disponer de *VisualStudio* 2017/2019 o *Visual Studio Code* con el *[SDK .net core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)*
 2. Clonar [este repositorio](https://github.com/jdepaz503/ApiLoginJdepaz)
 3. Utlizar la rama ***development***
-4. Correr los [***Script de migrations****](https://drive.google.com/drive/folders/1D1jK5zjWxG2-AfP9V9hlt58Vq1HcvQsN?usp=sharing) en un *MSSQL 2012*
+4. Correr los [***Script de migrations***](https://drive.google.com/drive/folders/1D1jK5zjWxG2-AfP9V9hlt58Vq1HcvQsN?usp=sharing) en un *MSSQL 2012* 
 5. Modificar la propiedad ***DefaultConnection*** ubicado en el proyecto *ApiLoginJdepaz.web*  en el archivo ***appsettings.json*** en la línea 12.
 6. No debería ser necesario, dar clic derecho en proyecto *ApiLoginJdepaz.web* y luego en Establacer como proyecto de inicio
 7. Verificar que en botón de depuración (botón play) tenga seleccionado el perfil ***ApiLoginJdepaz.web*** y no *IIS Express* u otro
 8. Importar [colección de postman](https://www.getpostman.com/collections/08162aca2634897b8693)
 9. Hacer las pruebas mediante *postman* ([seguir los siguientes pasos]()) o *swagger*.
 
-# 6. Prueba de Web Api con Postman (con detalles e imagenes) <div id='prueba' />
+# 6. Prueba de Web Api con Postman (con detalles e imágenes) <div id='prueba' />
 ## 6.1. Login 🚪 <div id='login' />
 ### 6.1.1. Login
 #### Ejemplo:
