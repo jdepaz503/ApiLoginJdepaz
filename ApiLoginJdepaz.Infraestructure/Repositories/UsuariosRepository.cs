@@ -245,17 +245,19 @@ namespace ApiLoginJdepaz.Infraestructure.Repositories
             string result = "";
             var tokenHandler = new JwtSecurityTokenHandler();
             var securityToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
-            var emailInToken = securityToken.Claims.First(claim => claim.Type == ClaimTypes.Email).Value;
-            var UserInToken = securityToken.Claims.First(claim => claim.Type == ClaimTypes.Email).Value;
-            var paramEmail_user = new SqlParameter("@username", UserInToken);
-            var paramUser_pass = new SqlParameter("@pass_user", newPassword);
-            var paramPatron = new SqlParameter("@Patron", config["AppSettings:PatronConfig"]);
+            var patron = config["AppSettings:PatronConfig"];
+            var emailInToken = securityToken.Claims.Where(c => c.Type == "email").Select(x => x.Value).FirstOrDefault();
+            var UserInToken = securityToken.Claims.Where(c => c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata").Select(x => x.Value).FirstOrDefault();
+            var paramUser_name = new SqlParameter("@username", UserInToken);
+            var paramEmail_user = new SqlParameter("@email_user", emailInToken);
+            var ParamPass_user = new SqlParameter("@pass_user", newPassword);
+            var paramPatron = new SqlParameter("@Patron", patron);
             try
             {
-                IList<TblUsuarios> usr = await db.Usuarios.FromSqlRaw("SP_cambiarClaveUsuario @username,@pass_user,@Patron", paramEmail_user, paramUser_pass, paramPatron).ToListAsync();
+                IList<TblUsuarios> usr = await db.Usuarios.FromSqlRaw("SP_cambiarClaveUsuario @username,@email_user,@pass_user,@Patron", paramUser_name, paramEmail_user, ParamPass_user, paramPatron).ToListAsync();
                 if (usr != null && usr.Count != 0)
                 {
-                    result ="Se cambió la clave para el usuario "+ UserInToken + "con correo " +usr.FirstOrDefault().email_user;
+                    result ="Se cambió la clave para el usuario "+ UserInToken + " con correo " +usr.FirstOrDefault().email_user;
                     return result;
                 }
 
