@@ -111,7 +111,7 @@ http://jdepaz2012-001-site1.ftempurl.com/api/v1.0/Auth
 }
 ```
 
-![login](https://www.campusmvp.es/recursos/image.axd?picture=/Logos-Banners/Entity-Framework-Core.png)
+![login](https://drive.google.com/file/d/1ewQ2OAtQwjJf3kdNvHlTavYgDKgDsYdF/view)
 
 ## 6.2. Usuario 👥 <div id='user' />
 ### 6.2.1. Agregar Usuario <div id='add' />
