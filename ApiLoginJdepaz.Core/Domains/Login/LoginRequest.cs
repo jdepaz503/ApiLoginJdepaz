@@ -11,7 +11,6 @@ namespace ApiLoginJdepaz.Core.Domains.Login
         [StringLength(50, MinimumLength = 4)]
         public string username { get; set; }
         [Required]
-        [EmailAddress]
         [StringLength(50, MinimumLength = 5)]
         public string pass_user { get; set; }        
     }
