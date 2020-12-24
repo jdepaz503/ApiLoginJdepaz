@@ -213,7 +213,7 @@ Lo que se hablaba anteriormente, actualmente el enlace del correo en este caso e
 ![login](https://i.ibb.co/2ghwJM7/12.png)
 
 ### 6.2.5. Cambiar contraseña 🔏 <div id='pwdupd' />
-#### 1. Preparar Authorize y copiar el token del paso [6.2.5](#login)
+#### 1. Preparar Authorize y copiar el token del paso [6.2.5.](#pwd)
 #### 2. Preparar petición
 #### Ejemplo:
 ```
