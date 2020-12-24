@@ -111,7 +111,7 @@ http://jdepaz2012-001-site1.ftempurl.com/api/v1.0/Auth
 }
 ```
 
-![login](https://drive.google.com/file/d/1ewQ2OAtQwjJf3kdNvHlTavYgDKgDsYdF/view)
+![login](https://i.ibb.co/2KZNrBJ/1.png)
 
 ## 6.2. Usuario 👥 <div id='user' />
 ### 6.2.1. Agregar Usuario <div id='add' />
